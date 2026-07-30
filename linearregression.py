@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.linear_model import LinearRegression
+
 W_true=[3, -2, 5]
 b_true = 4
 rng=np.random.default_rng(seed=42)
@@ -18,7 +20,7 @@ def compute_gradient(X,y,w,b):
     djb=(1/m)*np.sum((predictions-y))
     return djw,djb
 
-def gradient_descent(X,y,w,b,alpha,minimum_iterations):
+def gradient_descent(X,y,w,b,alpha,maximum_iterations):
     i=0
     previous_cost=0
     while True:
@@ -33,21 +35,29 @@ def gradient_descent(X,y,w,b,alpha,minimum_iterations):
             print("The cost is saturated")
             break
         previous_cost=current_cost
-        if i>=minimum_iterations:
+        if i>=maximum_iterations:
             print("the minimum_iterations have exceeded")
             break
-        if np.linalg.norm(dw) < 1e-6 or abs(db) < 1e-6:
-            print("the gardients are approaching 0")
-            break
+        if np.linalg.norm(dw) < 1e-6 and abs(db) < 1e-6:
+                    print("the gardients are approaching 0")
+                    break
     return w,b
 
 wi=np.zeros(3)
 bi=0
-w_final, b_final = gradient_descent(X, y, wi, bi, alpha=0.1, minimum_iterations=2000)
+w_final, b_final = gradient_descent(X, y, wi, bi, alpha=0.1, maximum_iterations=2000)
 print("Learned w:", w_final)
 print("Learned b:", b_final)
 print("True w:", W_true, "True b:", b_true)
 
+model=LinearRegression()
+model.fit(X, y)
+w_sklearn = model.coef_
+b_sklearn = model.intercept_
+print("Weightsfronsklearn:", w_sklearn)
+print("Biasfromsklearn:", b_sklearn)
+print("Difference in w:", np.abs(w_sklearn - w_final))
+print("Difference in b:", abs(b_sklearn - b_final))
 
 
 
